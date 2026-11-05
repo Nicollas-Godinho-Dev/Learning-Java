@@ -1,63 +1,72 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
 public class SistemaEstoque {
 
     public static void main(String[] args) {
-        
+
         Scanner scanner = new Scanner(System.in);
 
-        int opcao; 
+        int opcao;
 
         ArrayList<Produto> estoque = new ArrayList<>();
 
         do {
             exibirMenu();
-            opcao = scanner.nextInt();
 
-            switch(opcao) {
+            try {
+                opcao = scanner.nextInt();
 
-                case 1: 
-                    cadastrarProduto(scanner, estoque);
-                    break;
+                switch (opcao) {
 
-                case 2:
-                    listarProdutos(estoque);
-                    break;
+                    case 1:
+                        cadastrarProduto(scanner, estoque);
+                        break;
 
-                case 3:
-                    buscarProduto(scanner, estoque);
-                    break;
+                    case 2:
+                        listarProdutos(estoque);
+                        break;
 
-                case 4:
-                    alterarProduto(scanner, estoque);
-                    break;
+                    case 3:
+                        buscarProduto(scanner, estoque);
+                        break;
 
-                case 5: 
-                    removerProduto(scanner, estoque);
-                    break;
+                    case 4:
+                        alterarProduto(scanner, estoque);
+                        break;
 
-                case 6:
-                    registrarEntrada(scanner, estoque);
-                    break;
+                    case 5:
+                        removerProduto(scanner, estoque);
+                        break;
 
-                case 7:
-                    registrarSaida(scanner, estoque);
-                    break;
+                    case 6:
+                        registrarEntrada(scanner, estoque);
+                        break;
 
-                case 8:
-                    exibirRelatorio(estoque);
-                    break;
+                    case 7:
+                        registrarSaida(scanner, estoque);
+                        break;
 
-                case 9: 
-                    System.out.println("Saindo do sistema...");
-                    break;
+                    case 8:
+                        exibirRelatorio(estoque);
+                        break;
 
-                default:
-                    System.out.println("Opção inválida!");
+                    case 9:
+                        System.out.println("Saindo do sistema...");
+                        break;
+
+                    default:
+                        System.out.println("Opção inválida!");
+                }
+
+            } catch (InputMismatchException e) {
+                System.out.println("[ERRO] Digite apenas números inteiros!");
+                scanner.nextLine(); // Limpa buffer
+                opcao = 0; // Reseta o loop para o sistema não fechar
             }
 
-        } while (opcao != 9); 
+        } while (opcao != 9);
 
         scanner.close();
     }
@@ -82,14 +91,23 @@ public class SistemaEstoque {
         scanner.nextLine();
 
         System.out.println("Digite o nome:");
-        String nome = scanner.nextLine(); 
+        String nome = scanner.nextLine();
 
-        System.out.println("Digite o preço:");
-        double preco = scanner.nextDouble();
+        double preco = 0.0;
+        int quantidade = 0;
 
-        System.out.println("Digite a quantidade:");
-        int quantidade = scanner.nextInt();
+        try {
+            System.out.println("Digite o preço:");
+            preco = scanner.nextDouble();
 
+            System.out.println("Digite a quantidade:");
+            quantidade = scanner.nextInt();
+
+        } catch (InputMismatchException e) {
+            System.out.println("[ERRO] Preço e Quantidade devem ser números válidos! Cadastro cancelado.");
+            scanner.nextLine(); // Limpa Buffer
+            return;
+        }
         scanner.nextLine();
 
         System.out.println("Digite a categoria:");
@@ -112,7 +130,7 @@ public class SistemaEstoque {
     }
 
     public static void buscarProduto(Scanner scanner, ArrayList<Produto> estoque) {
-        scanner.nextLine(); 
+        scanner.nextLine();
         System.out.println("Digite o nome do produto desejado:");
         String busca = scanner.nextLine();
 
@@ -130,12 +148,12 @@ public class SistemaEstoque {
             if (nomeProcurado.equalsIgnoreCase(estoque.get(i).getNome())) {
                 return i;
             }
-        } 
+        }
         return -1;
     }
 
     public static void alterarProduto(Scanner scanner, ArrayList<Produto> estoque) {
-        scanner.nextLine(); 
+        scanner.nextLine();
         System.out.println("Digite o nome do produto que deseja alterar:");
         String produtoProcurado = scanner.nextLine();
 
@@ -145,11 +163,21 @@ public class SistemaEstoque {
             System.out.println("Digite o novo nome:");
             String novoNome = scanner.nextLine();
 
-            System.out.println("Digite o novo preço:");
-            double novoPreco = scanner.nextDouble();
+            double novoPreco = 0.0;
+            int novaQuantidade = 0;
 
-            System.out.println("Digite a nova quantidade:");
-            int novaQuantidade = scanner.nextInt();
+            try {
+                System.out.println("Digite o novo preço:");
+                novoPreco = scanner.nextDouble();
+
+                System.out.println("Digite a nova quantidade:");
+                novaQuantidade = scanner.nextInt();
+
+            } catch (InputMismatchException e) {
+                System.out.println("[ERRO] Preço e Quantidade devem ser números válidos! Alteração cancelada.");
+                scanner.nextLine();
+                return;
+            }
 
             scanner.nextLine();
 
@@ -165,7 +193,7 @@ public class SistemaEstoque {
     }
 
     public static void removerProduto(Scanner scanner, ArrayList<Produto> estoque) {
-        scanner.nextLine(); 
+        scanner.nextLine();
         System.out.println("Digite o nome do produto que deseja remover:");
         String produtoExcluir = scanner.nextLine();
 
@@ -181,18 +209,23 @@ public class SistemaEstoque {
     }
 
     public static void registrarEntrada(Scanner scanner, ArrayList<Produto> estoque) {
-        scanner.nextLine(); 
+        scanner.nextLine();
         System.out.println("Digite o nome do produto:");
-        String produtoEntrada = scanner.nextLine(); 
+        String produtoEntrada = scanner.nextLine();
 
         int indice = localizarIndiceProduto(estoque, produtoEntrada);
 
-        if (indice != -1) { 
-            System.out.println("Digite a quantidade de entrada:");
-            int quantidade = scanner.nextInt();
+        if (indice != -1) {
+            try {
+                System.out.println("Digite a quantidade de entrada:");
+                int quantidade = scanner.nextInt();
 
-            // Chama o método especialista do Produto
-            estoque.get(indice).adicionarEstoque(quantidade);
+                estoque.get(indice).adicionarEstoque(quantidade);
+
+            } catch (InputMismatchException e) {
+                System.out.println("[ERRO] A quantidade deve ser um número inteiro!");
+                scanner.nextLine();
+            }
         } else {
             System.out.println("Produto não encontrado no sistema!");
         }
@@ -206,11 +239,15 @@ public class SistemaEstoque {
         int indice = localizarIndiceProduto(estoque, produtoSaida);
 
         if (indice != -1) {
-            System.out.println("Digite a quantidade de saída:");
-            int valorSaida = scanner.nextInt();
+            try {
+                System.out.println("Digite a quantidade de saída:");
+                int valorSaida = scanner.nextInt();
 
-            // Chama o método especialista do Produto
-            estoque.get(indice).removerEstoque(valorSaida);
+                estoque.get(indice).removerEstoque(valorSaida);
+            } catch (InputMismatchException e) {
+                System.out.println("[ERRO] A quantidade deve ser um número inteiro!");
+                scanner.nextLine();
+            }
         } else {
             System.out.println("Produto não encontrado no sistema!");
         }
