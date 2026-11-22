@@ -1,3 +1,4 @@
+package model;
 public class Produto {
 
     private String nome;
@@ -74,5 +75,16 @@ public class Produto {
         } else {
             System.out.println("Erro: Quantidade insuficiente em estoque! Disponível: " + this.quantidade);
         }
+    }
+
+    // Transforma o objeto em uma linha de texto para o produtos.csv
+    public String toCSV() {
+        return nome + ";" + preco + ";" + quantidade + ";" + categoria;
+    }
+
+    // Formata a exibição do produto no console
+    @Override
+    public String toString() {
+        return "Produto: " + nome + " | Preço: R$ " + preco + " | Qtd: " + quantidade + " | Categoria: " + categoria;
     }
 }
