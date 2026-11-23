@@ -1,6 +1,8 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.InputMismatchException;
+import dao.ProdutoDAO;
+import model.Produto;
+import java.util.List;
 
 public class SistemaEstoque {
 
@@ -10,7 +12,8 @@ public class SistemaEstoque {
 
         int opcao;
 
-        ArrayList<Produto> estoque = new ArrayList<>();
+        ProdutoDAO produtoDAO = new ProdutoDAO();
+        List<Produto> estoque = produtoDAO.buscarTodos();
 
         do {
             exibirMenu();
@@ -21,7 +24,7 @@ public class SistemaEstoque {
                 switch (opcao) {
 
                     case 1:
-                        cadastrarProduto(scanner, estoque);
+                        cadastrarProduto(scanner, estoque, produtoDAO);
                         break;
 
                     case 2:
@@ -87,7 +90,7 @@ public class SistemaEstoque {
         System.out.print("Opção: ");
     }
 
-    public static void cadastrarProduto(Scanner scanner, ArrayList<Produto> estoque) {
+    public static void cadastrarProduto(Scanner scanner, List<Produto> estoque, ProdutoDAO produtoDAO) {
         scanner.nextLine();
 
         System.out.println("Digite o nome:");
@@ -113,12 +116,14 @@ public class SistemaEstoque {
         System.out.println("Digite a categoria:");
         String categoria = scanner.nextLine();
 
-        estoque.add(new Produto(nome, preco, quantidade, categoria));
+        Produto novoProduto = new Produto(nome, preco, quantidade, categoria);
+        estoque.add(novoProduto);
+        produtoDAO.salvar(novoProduto);
 
         System.out.println("Produto cadastrado com sucesso!");
     }
 
-    public static void listarProdutos(ArrayList<Produto> estoque) {
+    public static void listarProdutos(List<Produto> estoque) {
         if (estoque.isEmpty()) {
             System.out.println("Nenhum produto cadastrado!");
             return;
@@ -129,7 +134,7 @@ public class SistemaEstoque {
         }
     }
 
-    public static void buscarProduto(Scanner scanner, ArrayList<Produto> estoque) {
+    public static void buscarProduto(Scanner scanner, List<Produto> estoque) {
         scanner.nextLine();
         System.out.println("Digite o nome do produto desejado:");
         String busca = scanner.nextLine();
@@ -143,7 +148,7 @@ public class SistemaEstoque {
         }
     }
 
-    public static int localizarIndiceProduto(ArrayList<Produto> estoque, String nomeProcurado) {
+    public static int localizarIndiceProduto(List<Produto> estoque, String nomeProcurado) {
         for (int i = 0; i < estoque.size(); i++) {
             if (nomeProcurado.equalsIgnoreCase(estoque.get(i).getNome())) {
                 return i;
@@ -152,7 +157,7 @@ public class SistemaEstoque {
         return -1;
     }
 
-    public static void alterarProduto(Scanner scanner, ArrayList<Produto> estoque) {
+    public static void alterarProduto(Scanner scanner, List<Produto> estoque) {
         scanner.nextLine();
         System.out.println("Digite o nome do produto que deseja alterar:");
         String produtoProcurado = scanner.nextLine();
@@ -192,7 +197,7 @@ public class SistemaEstoque {
         }
     }
 
-    public static void removerProduto(Scanner scanner, ArrayList<Produto> estoque) {
+    public static void removerProduto(Scanner scanner, List<Produto> estoque) {
         scanner.nextLine();
         System.out.println("Digite o nome do produto que deseja remover:");
         String produtoExcluir = scanner.nextLine();
@@ -208,7 +213,7 @@ public class SistemaEstoque {
         }
     }
 
-    public static void registrarEntrada(Scanner scanner, ArrayList<Produto> estoque) {
+    public static void registrarEntrada(Scanner scanner, List<Produto> estoque) {
         scanner.nextLine();
         System.out.println("Digite o nome do produto:");
         String produtoEntrada = scanner.nextLine();
@@ -231,7 +236,7 @@ public class SistemaEstoque {
         }
     }
 
-    public static void registrarSaida(Scanner scanner, ArrayList<Produto> estoque) {
+    public static void registrarSaida(Scanner scanner, List<Produto> estoque) {
         scanner.nextLine();
         System.out.println("Digite o nome do produto:");
         String produtoSaida = scanner.nextLine();
@@ -253,7 +258,7 @@ public class SistemaEstoque {
         }
     }
 
-    public static void exibirRelatorio(ArrayList<Produto> estoque) {
+    public static void exibirRelatorio(List<Produto> estoque) {
         int totalUnidades = 0;
 
         for (Produto p : estoque) {
